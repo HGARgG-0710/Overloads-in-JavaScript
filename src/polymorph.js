@@ -1,6 +1,6 @@
 function polymorph() {
-	var typedArr = []
-	var notTypedArr = []
+	let typedArr = []
+	let notTypedArr = []
 
 	for (let i = 0; i < arguments.length; i++)
 		if (
