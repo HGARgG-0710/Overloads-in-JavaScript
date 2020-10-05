@@ -1,4 +1,4 @@
-import { polymorph } from "polymorph.js"
+import { polymorph } from "./polymorph"
 
 //* Examples how to use polymorph() function
 
