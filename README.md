@@ -10,7 +10,7 @@ The idea occured to me from that Ru Habr post: https://habr.com/ru/post/86403/
 To install the package use npm: 
 
 ```bash
-    npm install overloads.js
+npm install overloads.js
 ```
 
 ## Files
