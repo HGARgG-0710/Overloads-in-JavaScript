@@ -70,7 +70,7 @@ By default equals Math.random().
 
 ###### Note:
 
-    Here, I won't list the getValue(), getName() and getGenerator() methods.
+Here, I won't list the getValue(), getName() and getGenerator() methods.
 
 ###### 1. inherit(value)
 
