@@ -5,7 +5,7 @@
  * @author HGARgG-0710
  */
 
-const globalvars = []
+const globalvars = {}
 const localvars = { current: null, contexts: {} }
 
 // * A wrapper for various special values.
@@ -40,6 +40,14 @@ export class SpecialValue {
 
 	inherit(newval = this.#randomfunc()) {
 		return new SpecialValue(this.#name, newval, this.#randomfunc)
+	}
+
+	equals(thing) {
+		return (
+			thing instanceof SpecialValue &&
+			thing.getName() === this.#name &&
+			this.#value === thing.getValue()
+		)
 	}
 }
 
@@ -159,72 +167,83 @@ export function polymorphClass() {
 	}
 }
 
-export function priminit(
+export function primvarinit(
 	type,
 	name,
 	value,
-	isglobal = true,
 	context = "local"
 ) {
-	varinit(type, name, value, isglobal, context, (type, name, value) => {
-		if (typeof value !== type)
-			throw new TypeError(
-				`Variable of name ${name} and ${value} was defined as the primitive of type ${type}`
-			)
-	})
+	varinit(type, name, value, context, (type, name, value) =>
+		primitiveValueCheck(value, type, name)
+	)
 }
 
-export function classinit(
-	className,
-	name,
-	value,
-	isglobal = true,
-	context = "local"
-) {
-	varinit(className, name, value, isglobal, context, (type, name, value) => {
-		if (!eval(`value instanceof ${type}`))
-			throw new TypeError(
-				`Variable of name ${name} and value ${value} was defined as the class variable of ${type}. `
-			)
-	})
+export function classvarinit(className, name, value, context = "local") {
+	varinit(className, name, value, context, (type, name, value) =>
+		classCheck(value, type, name)
+	)
+}
+
+export function primitiveValueCheck(value, type, name = "") {
+	if (typeof value !== type)
+		throw new TypeError(
+			`Variable of name ${name} and ${value} was defined as the primitive of type ${type}`
+		)
+
+	return value
+}
+
+export function classValueCheck(value, className, name = "") {
+	if (!eval(`value instanceof ${className}`))
+		throw new TypeError(
+			name === ""
+				? `Trying to initialize value ${value} to a variable of class ${className}`
+				: `Variable of name ${name} and value ${value} was defined as the class variable of ${type}. `
+		)
+	return value
 }
 
 export function varinit(
 	type,
 	name,
 	value,
-	isglobal = true,
 	context = "local",
 	checkingFunc = null
 ) {
 	checkingFunc(type, name, value)
-	const varinfo = { name: name, value: value, type: type }
-
-	if (isglobal) {
-		globalvars.push(varinfo)
-		return 1
-	}
-
-	if (context === "local") {
-		localvars.current.push(varinfo)
-		return 1
-	}
-
-	localvars.contexts[context].push(varinfo)
+	const varinfo = { value: value, type: type }
+	return context === "local"
+		? (localvars.current[name] = varinfo)
+		: context === "global"
+		? (globalvars[name] = varinfo)
+		: (localvars.contexts[context][name] = varinfo)
 }
 
 export function setcurrcontext(contextname) {
-	return localvars.current = localvars.contexts[contextname]
-} 
+	return (localvars.current = localvars.contexts[contextname])
+}
 
 export function getcurrcontext() {
 	return localvars.current
-} 
+}
 
 export function varread(name, context = "local") {
 	return context === "global"
 		? global[name]
 		: context === "local"
-		? localvars.current
-		: localvars.contexts[context]
+		? localvars.current[name]
+		: localvars.contexts[context][name]
 }
+
+export function varset(name, value, context = "local", checkFunc = null) {
+	checkFunc(name, value)
+	return context === "local"
+		? (localvars.current[name].value = value)
+		: context === "global"
+		? (globalvars[name].value = value)
+		: (localvars[context][name].value = value)
+}
+
+export function defineFunc(outtypes, polyargs, classFunc = false) {
+	// TODO: Finish the thing and integrate it with the polymorph() and polymophClass() things in order for the function output type to work well. 
+} 

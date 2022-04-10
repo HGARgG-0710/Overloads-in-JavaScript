@@ -5,6 +5,14 @@ Also, allows to add typing to JavaScript functions without the use of TypeScript
 That particular implementation and various additions to the thing (that made it look, behave and work better) are all mine.  
 The idea occured to me from that Ru Habr post: https://habr.com/ru/post/86403/
 
+## Install 
+
+To install the package use npm: 
+
+```bash
+    npm install overloads.js
+```
+
 ## Files
 
 For examples go to the src/examples.js file.
