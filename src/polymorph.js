@@ -1,8 +1,15 @@
+/**
+ * * Hello and welcome into the source code. Feel yourself at home.
+ * * I added various comments and tried to make code more accessible.
+ * * Hope it was a success :)
+ * @author HGARgG-0710
+ */
+
 // * A wrapper for various special values.
 /**
- * * A SpecialValue class. 
- * * May come in useful when using with polymorphClass function. 
-*/
+ * * A SpecialValue class.
+ * * May come in useful when using with polymorphClass function.
+ */
 export class SpecialValue {
 	#value
 	#name
@@ -16,7 +23,7 @@ export class SpecialValue {
 		this.#randomfunc = randomfunc
 	}
 
-	getType() {
+	getValue() {
 		return this.#value
 	}
 
@@ -34,27 +41,26 @@ export class SpecialValue {
 }
 
 /**
- * * A constant Any class. The simplest wrapper possible. 
- * * May come in useful when using with polymorphClass function (for untyped parameters).  
-*/
+ * * A constant Any class. The simplest wrapper possible.
+ * * May come in useful when using with polymorphClass function (for untyped parameters).
+ */
 export class Any {
 	#value
 
-	constructor (value) {
+	constructor(value) {
 		this.#value = value
-	} 
+	}
 
-	get value () {
+	get value() {
 		return this.#value
-	} 
-} 
+	}
+}
 
 /**
  * * Creates a function, with a bunch of overloads.
- * * Is especially useful with primitives (doesn't separate between object types). 
+ * * Is especially useful with primitives (doesn't separate between object types).
  * @param args - can be an object, that has indexes of arguments for an overload or an overload, that comes after this object. Count of arguments is unlimited.
  */
-
 export function polymorph() {
 	let typedArr = []
 	let notTypedArr = []
@@ -77,7 +83,8 @@ export function polymorph() {
 			if (typeof typedArr[i] == "object") {
 				correctTypeCount = 0
 				for (let j = 0; j < arguments.length; j++) {
-					if (typedArr[i][j] == typeof arguments[j]) correctTypeCount++
+					if (typedArr[i][j] == typeof arguments[j])
+						correctTypeCount++
 
 					if (correctTypeCount == j + 1 && j == arguments.length - 1)
 						return typedArr[i + 1].apply(this, arguments)
@@ -133,7 +140,10 @@ export function polymorphClass() {
 					)
 
 					if (j === arguments.length - 1 && hasEquatedBefore)
-						return typedArray[arguments.length][i].func.apply(this, arguments)
+						return typedArray[arguments.length][i].func.apply(
+							this,
+							arguments
+						)
 				}
 			}
 

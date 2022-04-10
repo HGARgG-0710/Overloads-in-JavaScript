@@ -14,7 +14,8 @@
 	"keywords": [
 		"overloads",
 		"polymorph",
-		"js"
+		"js-types", 
+		"typescript-alternative"
 	],
 	"author": "hgargg-0710",
 	"license": "MIT",
