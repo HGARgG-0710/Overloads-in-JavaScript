@@ -1,0 +1,25 @@
+{
+	"name": "overloads.js",
+	"version": "1.0.0",
+	"description": "A set of functions, that allow to define overload functions in JavaScript.",
+	"main": "src/polymorph.js",
+	"type": "module", 
+	"scripts": {
+		"test": "node src/examples.js "
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/HGARgG-0710/Overloads-in-JavaScript.git"
+	},
+	"keywords": [
+		"overloads",
+		"polymorph",
+		"js"
+	],
+	"author": "hgargg-0710",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/HGARgG-0710/Overloads-in-JavaScript/issues"
+	},
+	"homepage": "https://github.com/HGARgG-0710/Overloads-in-JavaScript#readme"
+}
