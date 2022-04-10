@@ -1,22 +1,49 @@
-import { polymorph } from "./polymorph"
+import { polymorph, polymorphClass } from "./polymorph"
 
-//* Examples how to use polymorph() function
+//* Examples on how to use polymorph() function
 
-let PolyFunction = polymorph(
-	{ 0: "number", 1: "string" },
+// * Note: all the functions are typed. 
+const PolyFunction = polymorph(
+	["number", "string" ],
 	function (num, str) {
-		return `Number ${num} and string "${str}" were passed`
+		return `Number (${num}) and string ("${str}") were passed`
 	},
-	{ 0: "object" },
+	[ "object" ],
 	function (obj) {
-		return `Object ${obj} passed`
+		return `Object (${JSON.stringify(obj)}) passed`
 	},
-	{ 0: "boolean" },
+	[ "boolean" ],
 	function (boolean) {
-		return `Boolean ${boolean} was passed`
+		return `Boolean (${boolean}) was passed`
 	}
 )
 
 console.log(PolyFunction({ name: "Borya", status: "sleeping" }))
 console.log(PolyFunction(42, "Hello World"))
 console.log(PolyFunction(true))
+
+// * An untyped example. 
+const regFunc = polymorph(
+	function (anything) {
+		return anything + anything
+	},
+	{ 0: "boolean", 1: "number" },
+	function (bool, number) {
+		return bool + number
+	}
+)
+
+console.log(regFunc("Hello")) // HelloHello
+console.log(regFunc(false, 1)) // 1
+
+// * A class example. 
+const polyCl = polymorphClass(
+    function (a) {return a}, 
+    ["String", "String"], 
+    function (a, b) {return a + b}
+)
+
+const a = new String ("a")
+
+console.log(polyCl(a, new String(a + a))) // aaa
+console.log(polyCl(0)) // 0
