@@ -5,8 +5,20 @@
  * @author HGARgG-0710
  */
 
+export const PRIMITIVE_TYPES = [
+	"object",
+	"function",
+	"string",
+	"number",
+	"boolean",
+	"undefined",
+	"symbol",
+	"bigint",
+]
+
 const globalvars = {}
 const localvars = { current: null, contexts: {} }
+const functions = {}
 
 // * A wrapper for various special values.
 /**
@@ -167,12 +179,7 @@ export function polymorphClass() {
 	}
 }
 
-export function primvarinit(
-	type,
-	name,
-	value,
-	context = "local"
-) {
+export function primvarinit(type, name, value, context = "local") {
 	varinit(type, name, value, context, (type, name, value) =>
 		primitiveValueCheck(value, type, name)
 	)
@@ -184,20 +191,36 @@ export function classvarinit(className, name, value, context = "local") {
 	)
 }
 
-export function primitiveValueCheck(value, type, name = "") {
+export function primitiveValueCheck(
+	value,
+	type,
+	name = "",
+	isFunctionCall = false
+) {
 	if (typeof value !== type)
 		throw new TypeError(
-			`Variable of name ${name} and ${value} was defined as the primitive of type ${type}`
+			name === ""
+				? isFunctionCall
+					? `Function value does not follow the given primitive type. `
+					: `Tyring to initialize value ${value} to a variable of class ${className}. `
+				: `Variable of name ${name} and ${value} was defined as the primitive of type ${type}. `
 		)
 
 	return value
 }
 
-export function classValueCheck(value, className, name = "") {
+export function classValueCheck(
+	value,
+	className,
+	name = "",
+	isFunctionCall = false
+) {
 	if (!eval(`value instanceof ${className}`))
 		throw new TypeError(
 			name === ""
-				? `Trying to initialize value ${value} to a variable of class ${className}`
+				? isFunctionCall
+					? `Function output does not follow the given class type. `
+					: `Trying to initialize value ${value} to a variable of class ${className}`
 				: `Variable of name ${name} and value ${value} was defined as the class variable of ${type}. `
 		)
 	return value
@@ -244,6 +267,17 @@ export function varset(name, value, context = "local", checkFunc = null) {
 		: (localvars[context][name].value = value)
 }
 
-export function defineFunc(outtypes, polyargs, classFunc = false) {
-	// TODO: Finish the thing and integrate it with the polymorph() and polymophClass() things in order for the function output type to work well. 
-} 
+export function defineFunc(name, type, polyargs, classFunc = false) {
+	functions[name] = {
+		type: type,
+		funct: classFunc ? polymorphClass(polyargs) : polymorph(polyargs),
+	}
+}
+
+export function callFunc(name, args) {
+	return (
+		PRIMITIVE_TYPES.includes(functions[name].type)
+			? primitiveValueCheck
+			: classValueCheck
+	)(functions[name](args), functions[name].type, "", true)
+}

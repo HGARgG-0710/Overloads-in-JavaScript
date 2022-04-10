@@ -1,7 +1,7 @@
 {
 	"name": "overloads.js",
 	"version": "1.0.0",
-	"description": "A set of functions, that allow to define overload functions in JavaScript.",
+	"description": "A load of additional unsupported in JavaScript features (such as static typing, context management and function overloading).",
 	"main": "src/polymorph.js",
 	"type": "module", 
 	"scripts": {
