@@ -281,3 +281,7 @@ export function callFunc(name, args) {
 			: classValueCheck
 	)(functions[name](args), functions[name].type, "", true)
 }
+
+export function makeContext(context) {
+	localvars.contexts[context] = {}
+} 
