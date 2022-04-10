@@ -16,9 +16,8 @@ export const PRIMITIVE_TYPES = [
 	"bigint",
 ]
 
-const globalvars = {}
+const globalvars = { functions: {}, variables: {} }
 const localvars = { current: null, contexts: {} }
-const functions = {}
 
 // * A wrapper for various special values.
 /**
@@ -236,10 +235,10 @@ export function varinit(
 	checkingFunc(type, name, value)
 	const varinfo = { value: value, type: type }
 	return context === "local"
-		? (localvars.current[name] = varinfo)
+		? (localvars.current.variables[name] = varinfo)
 		: context === "global"
-		? (globalvars[name] = varinfo)
-		: (localvars.contexts[context][name] = varinfo)
+		? (globalvars.variables[name] = varinfo)
+		: (localvars.contexts[context].variables[name] = varinfo)
 }
 
 export function setcurrcontext(contextname) {
@@ -252,19 +251,19 @@ export function getcurrcontext() {
 
 export function varread(name, context = "local") {
 	return context === "global"
-		? global[name]
+		? global.variables[name]
 		: context === "local"
-		? localvars.current[name]
-		: localvars.contexts[context][name]
+		? localvars.current.variables[name]
+		: localvars.contexts[context].variables[name]
 }
 
 export function varset(name, value, context = "local", checkFunc = null) {
 	checkFunc(name, value)
 	return context === "local"
-		? (localvars.current[name].value = value)
+		? (localvars.current.variables[name].value = value)
 		: context === "global"
-		? (globalvars[name].value = value)
-		: (localvars[context][name].value = value)
+		? (globalvars.variables[name].value = value)
+		: (localvars[context].variables[name].value = value)
 }
 
 export function defineFunc(name, type, polyargs, classFunc = false) {
@@ -274,18 +273,31 @@ export function defineFunc(name, type, polyargs, classFunc = false) {
 	}
 }
 
-export function callFunc(name, args) {
+function contextChoice(context) {
+	return context === "global"
+		? globalvars
+		: context === "local"
+		? localvars.current
+		: localvars[context]
+}
+
+export function callFunc(name, context, args) {
 	return (
-		PRIMITIVE_TYPES.includes(functions[name].type)
+		PRIMITIVE_TYPES.includes(contextChoice(context).functions[name].type)
 			? primitiveValueCheck
 			: classValueCheck
-	)(functions[name](args), functions[name].type, "", true)
+	)(
+		contextChoice(context).functions[name](args),
+		contextChoice(context).functions[name].type,
+		"",
+		true
+	)
 }
 
 export function makeContext(context) {
-	localvars.contexts[context] = {}
-} 
+	localvars.contexts[context] = { variables: {}, functions: {} }
+}
 
-export function deleteContext (context) {
+export function deleteContext(context) {
 	delete localvars[context]
 }
