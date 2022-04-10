@@ -285,3 +285,7 @@ export function callFunc(name, args) {
 export function makeContext(context) {
 	localvars.contexts[context] = {}
 } 
+
+export function deleteContext (context) {
+	delete localvars[context]
+}
