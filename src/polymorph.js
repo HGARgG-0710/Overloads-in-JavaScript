@@ -5,6 +5,9 @@
  * @author HGARgG-0710
  */
 
+const globalvars = []
+const localvars = { current: null, contexts: {} }
+
 // * A wrapper for various special values.
 /**
  * * A SpecialValue class.
@@ -154,4 +157,74 @@ export function polymorphClass() {
 			)
 		else return untypedArray[arguments.length].apply(this, arguments)
 	}
+}
+
+export function priminit(
+	type,
+	name,
+	value,
+	isglobal = true,
+	context = "local"
+) {
+	varinit(type, name, value, isglobal, context, (type, name, value) => {
+		if (typeof value !== type)
+			throw new TypeError(
+				`Variable of name ${name} and ${value} was defined as the primitive of type ${type}`
+			)
+	})
+}
+
+export function classinit(
+	className,
+	name,
+	value,
+	isglobal = true,
+	context = "local"
+) {
+	varinit(className, name, value, isglobal, context, (type, name, value) => {
+		if (!eval(`value instanceof ${type}`))
+			throw new TypeError(
+				`Variable of name ${name} and value ${value} was defined as the class variable of ${type}. `
+			)
+	})
+}
+
+export function varinit(
+	type,
+	name,
+	value,
+	isglobal = true,
+	context = "local",
+	checkingFunc = null
+) {
+	checkingFunc(type, name, value)
+	const varinfo = { name: name, value: value, type: type }
+
+	if (isglobal) {
+		globalvars.push(varinfo)
+		return 1
+	}
+
+	if (context === "local") {
+		localvars.current.push(varinfo)
+		return 1
+	}
+
+	localvars.contexts[context].push(varinfo)
+}
+
+export function setcurrcontext(contextname) {
+	return localvars.current = localvars.contexts[contextname]
+} 
+
+export function getcurrcontext() {
+	return localvars.current
+} 
+
+export function varread(name, context = "local") {
+	return context === "global"
+		? global[name]
+		: context === "local"
+		? localvars.current
+		: localvars.contexts[context]
 }
