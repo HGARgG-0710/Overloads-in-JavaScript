@@ -5,7 +5,8 @@
  * @author HGARgG-0710
  */
 
-export const PRIMITIVE_TYPES = [
+export const PRIMITIVE_TYPES = Object.freeze([
+	"any",
 	"object",
 	"function",
 	"string",
@@ -14,7 +15,7 @@ export const PRIMITIVE_TYPES = [
 	"undefined",
 	"symbol",
 	"bigint",
-]
+])
 
 const globalvars = { functions: {}, variables: {} }
 const localvars = { current: null, contexts: {} }
@@ -179,8 +180,13 @@ export function polymorphClass() {
 }
 
 export function primvarinit(type, name, value, context = "local") {
-	varinit(type, name, value, context, (type, name, value) =>
-		primitiveValueCheck(value, type, name)
+	if (!PRIMITIVE_TYPES.includes(type)) {
+		throw new Error(
+			`there is no such a primitive type in the Overloads library as ${type}.`
+		)
+	}
+	return varinit(type, name, value, context, (type, name, value) =>
+		primitiveValueCheck(value, type === "any" ? typeof value : type, name)
 	)
 }
 
@@ -201,7 +207,7 @@ export function primitiveValueCheck(
 			name === ""
 				? isFunctionCall
 					? `Function value does not follow the given primitive type. `
-					: `Tyring to initialize value ${value} to a variable of class ${className}. `
+					: `Tyring to initialize value ${value} to a variable of primitive type ${type}. `
 				: `Variable of name ${name} and ${value} was defined as the primitive of type ${type}. `
 		)
 
@@ -230,44 +236,93 @@ export function varinit(
 	name,
 	value,
 	context = "local",
-	checkingFunc = null
+	checkingFunc = function () {}
 ) {
 	checkingFunc(type, name, value)
 	const varinfo = { value: value, type: type }
-	return context === "local"
-		? (localvars.current.variables[name] = varinfo)
-		: context === "global"
-		? (globalvars.variables[name] = varinfo)
-		: (localvars.contexts[context].variables[name] = varinfo)
+	return (contextChoice(context).variables[name] = varinfo)
 }
 
 export function setcurrcontext(contextname) {
-	return (localvars.current = localvars.contexts[contextname])
+	return contextname === "global"
+		? (localvars.current = globalvars)
+		: (localvars.current = localvars.contexts[contextname])
 }
 
 export function getcurrcontext() {
-	return localvars.current
+	function compare(a, b) {
+		if (
+			Object.keys(a.variables).length !==
+				Object.keys(b.variables).length ||
+			Object.keys(a.functions).length !== Object.keys(b.functions).length
+		)
+			return false
+
+		for (const func in a.functions) {
+			if (
+				!Object.keys(b.functions).includes(func) ||
+				String(a.functions[func]) !== String(b.functions[func])
+			)
+				return false
+		}
+
+		for (const vari in a.variables) {
+			if (
+				Object.keys(!b.variables).includes(vari) ||
+				b.variables[vari].type !== a.variables[vari].type ||
+				b.variables[vari].value !== a.variables[vari].value
+			)
+				return false
+		}
+
+		return true
+	}
+
+	const current = localvars.current
+	let name
+
+	if (compare(localvars.current, globalvars)) name = "global"
+	else
+		for (const otherName in localvars.contexts)
+			if (compare(localvars.contexts[otherName], current)) {
+				name = otherName
+				break
+			}
+
+	return { name: name, context: current }
 }
 
 export function varread(name, context = "local") {
-	return context === "global"
-		? global.variables[name]
-		: context === "local"
-		? localvars.current.variables[name]
-		: localvars.contexts[context].variables[name]
+	return contextChoice(context).variables[name]
 }
 
-export function varset(name, value, context = "local", checkFunc = null) {
+// todo: finish the examples for functions on lines 308-363
+
+export function varset(
+	name,
+	value,
+	context = "local",
+	checkFunc = function () {}
+) {
 	checkFunc(name, value)
-	return context === "local"
-		? (localvars.current.variables[name].value = value)
-		: context === "global"
-		? (globalvars.variables[name].value = value)
-		: (localvars[context].variables[name].value = value)
+
+	const vari = contextChoice(context).variables[name]
+	if (vari.type !== "any")
+		if (PRIMITIVE_TYPES.includes(vari.type))
+			primitiveValueCheck(value, vari.type, name)
+		else classValueCheck(value, vari.type, name)
+
+	return (vari.value = value)
 }
 
-export function defineFunc(name, type, polyargs, classFunc = false) {
-	functions[name] = {
+export function defineFunc(
+	name,
+	type,
+	polyargs,
+	context = "local",
+	classFunc = false
+) {
+	contextChoice(context).functions[name] = {
 		type: type,
 		funct: classFunc ? polymorphClass(polyargs) : polymorph(polyargs),
 	}
@@ -278,7 +333,12 @@ function contextChoice(context) {
 		? globalvars
 		: context === "local"
 		? localvars.current
-		: localvars[context]
+		: localvars.contexts[context]
+}
+
+export function getFuncRef(name, context = "local") {
+	context = contextChoice(context)
+	return context.functions[name]
 }
 
 export function callFunc(name, context, args) {
@@ -300,4 +360,8 @@ export function makeContext(context) {
 
 export function deleteContext(context) {
 	delete localvars[context]
+}
+
+export function printVar(varname, context = "local") {
+	console.log(varread(varname, context))
 }

@@ -1,4 +1,15 @@
-import { polymorph, polymorphClass } from "./polymorph.js"
+import {
+	polymorph,
+	polymorphClass,
+	primitiveValueCheck,
+	classValueCheck,
+	makeContext,
+	setcurrcontext,
+	varinit,
+	primvarinit,
+	printVar,
+	getcurrcontext,
+} from "./polymorph.js"
 
 //* Examples on how to use polymorph() function
 
@@ -51,3 +62,46 @@ const a = new String("a")
 
 console.log(polyCl(a, new String(a + a))) // aaa
 console.log(polyCl(0)) // 0
+
+// * Examples on safe typesystem (TypeScript alternative).
+
+// Safe variable initializing.
+const typesafeprim = primitiveValueCheck(5, "number")
+console.log(typesafeprim)
+
+// This line:
+// * const F = primitiveValueCheck("Howdy", "object")
+// Would cause an error.
+
+// Safe class variable initializing.
+const classval = classValueCheck([], "Array")
+console.log(classval)
+
+// And this line:
+// * const Thing = classValueCheck(new Number(), "String")
+// Would cause an error.
+
+// * Working with inner variables and contexts.
+
+// * NOTE: A context is essentially a new variable and function space. 
+// * A feature of context management is abscent in all the programming languages and instead is handled by the language instead. 
+// * The library allows to do it explicitly. 
+
+makeContext("examples") // making a new context, called "examples"
+setcurrcontext("examples") // setting the "examples context as the local one".
+
+primvarinit("any", "dynamic", 0) // dynamically typezated variable `dynamic` was defined in the context "examples", which was set to be the current one. 
+primvarinit("string", "static", "That is the value") // statically typezated variable, containing a string "That is the value" 'static' was defined in the context "examples". 
+
+console.log(getcurrcontext())
+
+printVar("static", "local") // print the variable from the local (current) scope (context). 
+printVar("dynamic", "examples")
+
+// * NOTE: In Overloads.js, a variable is kept in a certain way: 
+// * {value: someVal, type: someType}; where someType - a string (class name or a primitive type name) and value is whatever it's been assigned to. 
+
+// * NOTE: For dynamic typezation, use the varinit() without the fifth argument (which is a customary function, called before doing everything else) or primvarinit() 
+// * with "any" type. 
+// * For static typezation use primvarinit() for primitive type variable initialization, classvarinit() for class variable initialization, 
+// * 
