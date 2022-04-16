@@ -1,5 +1,8 @@
 /**
- * * Hello and welcome into the source code. Feel yourself at home.
+ * * Hello and welcome into the source code of the Overloads.js library.
+ * * Feel yourself at home.
+ * * The library's purpose originally was only to add various missing features to JavaScript (namely, the function overloading),
+ * * however, later I decided to add some more stuff and this gave rise to completely new and in a different way valuable capabilities.
  * * I added various comments and tried to make code more accessible.
  * * Hope it was a success :)
  * @author HGARgG-0710
@@ -192,7 +195,7 @@ export function primvarinit(type, name, value, context = "local") {
 
 export function classvarinit(className, name, value, context = "local") {
 	varinit(className, name, value, context, (type, name, value) =>
-		classCheck(value, type, name)
+		classValueCheck(value, type, name)
 	)
 }
 
@@ -207,7 +210,11 @@ export function primitiveValueCheck(
 			name === ""
 				? isFunctionCall
 					? `Function value does not follow the given primitive type. `
-					: `Tyring to initialize value ${value} to a variable of primitive type ${type}. `
+					: `Tyring to initialize value ${
+							value instanceof String || typeof value === "string"
+								? '"' + value + '"'
+								: value
+					  } to a variable of primitive type ${type}. `
 				: `Variable of name ${name} and ${value} was defined as the primitive of type ${type}. `
 		)
 
@@ -226,7 +233,11 @@ export function classValueCheck(
 				? isFunctionCall
 					? `Function output does not follow the given class type. `
 					: `Trying to initialize value ${value} to a variable of class ${className}`
-				: `Variable of name ${name} and value ${value} was defined as the class variable of ${type}. `
+				: `Variable of name ${name} and value ${
+						value instanceof String || typeof value === "string"
+							? '"' + value + '"'
+							: value
+				  } was defined as the class variable of ${className}. `
 		)
 	return value
 }
@@ -296,7 +307,6 @@ export function varread(name, context = "local") {
 	return contextChoice(context).variables[name]
 }
 
-// todo: finish the examples for functions on lines 308-363
 
 export function varset(
 	name,
@@ -314,6 +324,8 @@ export function varset(
 
 	return (vari.value = value)
 }
+
+// todo: finish the examples for functions on lines 330-373
 
 export function defineFunc(
 	name,

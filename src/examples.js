@@ -5,10 +5,11 @@ import {
 	classValueCheck,
 	makeContext,
 	setcurrcontext,
-	varinit,
 	primvarinit,
 	printVar,
 	getcurrcontext,
+	varset,
+	classvarinit
 } from "./polymorph.js"
 
 //* Examples on how to use polymorph() function
@@ -104,4 +105,17 @@ printVar("dynamic", "examples")
 // * NOTE: For dynamic typezation, use the varinit() without the fifth argument (which is a customary function, called before doing everything else) or primvarinit() 
 // * with "any" type. 
 // * For static typezation use primvarinit() for primitive type variable initialization, classvarinit() for class variable initialization, 
-// * 
+// * varinit() also allows for arbitrary checks (you can extend the library this way).  
+
+varset("dynamic", new Number(42))
+varset("static", "new value")
+
+classvarinit("Number", "n", new Number(10000000))
+
+// The line: 
+// * varset("n", new String("that won't work, will it?"))
+// will cause an error to occur. 
+
+printVar("n")
+printVar("static")
+printVar("dynamic")
