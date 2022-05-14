@@ -9,7 +9,11 @@ import {
 	printVar,
 	getcurrcontext,
 	varset,
-	classvarinit
+	classvarinit,
+	defineFunc,
+	callFunc,
+	deleteContext,
+	getFuncRef
 } from "./polymorph.js"
 
 //* Examples on how to use polymorph() function
@@ -84,38 +88,62 @@ console.log(classval)
 
 // * Working with inner variables and contexts.
 
-// * NOTE: A context is essentially a new variable and function space. 
-// * A feature of context management is abscent in all the programming languages and instead is handled by the language instead. 
-// * The library allows to do it explicitly. 
+// * NOTE: A context is essentially a new variable and function space.
+// * A feature of context management is abscent in all the programming languages and instead is handled by the language instead.
+// * The library allows to do it explicitly.
 
 makeContext("examples") // making a new context, called "examples"
 setcurrcontext("examples") // setting the "examples context as the local one".
 
-primvarinit("any", "dynamic", 0) // dynamically typezated variable `dynamic` was defined in the context "examples", which was set to be the current one. 
-primvarinit("string", "static", "That is the value") // statically typezated variable, containing a string "That is the value" 'static' was defined in the context "examples". 
+primvarinit("any", "dynamic", 0) // dynamically typezated variable `dynamic` was defined in the context "examples", which was set to be the current one.
+primvarinit("string", "static", "That is the value") // statically typezated variable, containing a string "That is the value" 'static' was defined in the context "examples".
 
 console.log(getcurrcontext())
 
-printVar("static", "local") // print the variable from the local (current) scope (context). 
+printVar("static", "local") // print the variable from the local (current) scope (context). (it is the examples context)
 printVar("dynamic", "examples")
 
-// * NOTE: In Overloads.js, a variable is kept in a certain way: 
-// * {value: someVal, type: someType}; where someType - a string (class name or a primitive type name) and value is whatever it's been assigned to. 
+// * NOTE: In Overloads.js, a variable is kept in a certain way:
+// * {value: someVal, type: someType}; where someType - a string (class name or a primitive type name) and value is whatever it's been assigned to.
 
-// * NOTE: For dynamic typezation, use the varinit() without the fifth argument (which is a customary function, called before doing everything else) or primvarinit() 
-// * with "any" type. 
-// * For static typezation use primvarinit() for primitive type variable initialization, classvarinit() for class variable initialization, 
-// * varinit() also allows for arbitrary checks (you can extend the library this way).  
+// * NOTE: For dynamic typezation, use the varinit() without the fifth argument (which is a customary function, called before doing everything else) or primvarinit()
+// * with "any" type.
+// * For static typezation use primvarinit() for primitive type variable initialization, classvarinit() for class variable initialization,
+// * varinit() also allows for arbitrary checks (you can extend the library this way).
 
 varset("dynamic", new Number(42))
 varset("static", "new value")
 
 classvarinit("Number", "n", new Number(10000000))
 
-// The line: 
+// The line:
 // * varset("n", new String("that won't work, will it?"))
-// will cause an error to occur. 
+// will cause an error to occur.
 
 printVar("n")
 printVar("static")
 printVar("dynamic")
+
+defineFunc("isodd", "boolean", [
+	["number"],
+	function (n) {
+		return n % 2 === 1
+	},
+	"examples"
+])
+
+
+console.log(getFuncRef("isodd", "examples"))
+console.log(callFunc("isodd", "examples", 3))
+// console.log(callFunc("isodd", "examples", "string"))
+
+makeContext("dummy")
+classvarinit("Number", "n", new Number(20), "dummy")
+printVar("n", "dummy")
+deleteContext("dummy")
+
+
+// Those lines: 
+// * setcurrcontext("dummy")
+// * console.log(getcurrcontext())
+// Would cause an error for the dummy context has already been deleted by us. 

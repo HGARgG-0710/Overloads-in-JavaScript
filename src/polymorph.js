@@ -8,6 +8,8 @@
  * @author HGARgG-0710
  */
 
+// TODO: Add some good comments for the rest of the functions. 
+
 export const PRIMITIVE_TYPES = Object.freeze([
 	"any",
 	"object",
@@ -325,8 +327,7 @@ export function varset(
 	return (vari.value = value)
 }
 
-// todo: finish the examples for functions on lines 330-373
-
+// * Note: polyargs is an array. 
 export function defineFunc(
 	name,
 	type,
@@ -336,7 +337,7 @@ export function defineFunc(
 ) {
 	contextChoice(context).functions[name] = {
 		type: type,
-		funct: classFunc ? polymorphClass(polyargs) : polymorph(polyargs),
+		funct: classFunc ? polymorphClass(...polyargs) : polymorph(...polyargs),
 	}
 }
 
@@ -353,15 +354,15 @@ export function getFuncRef(name, context = "local") {
 	return context.functions[name]
 }
 
-export function callFunc(name, context, args) {
+export function callFunc(name, context, ...args) {
 	return (
 		PRIMITIVE_TYPES.includes(contextChoice(context).functions[name].type)
 			? primitiveValueCheck
 			: classValueCheck
 	)(
-		contextChoice(context).functions[name](args),
+		contextChoice(context).functions[name].funct(...args),
 		contextChoice(context).functions[name].type,
-		"",
+		name,
 		true
 	)
 }
@@ -371,7 +372,7 @@ export function makeContext(context) {
 }
 
 export function deleteContext(context) {
-	delete localvars[context]
+	delete localvars.contexts[context]
 }
 
 export function printVar(varname, context = "local") {
