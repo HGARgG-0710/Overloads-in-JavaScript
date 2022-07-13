@@ -8,8 +8,7 @@
  * @author HGARgG-0710
  */
 
-// TODO: Add some good comments for the rest of the functions. 
-
+// * The types that are considered primitive by the library
 export const PRIMITIVE_TYPES = Object.freeze([
 	"any",
 	"object",
@@ -184,23 +183,44 @@ export function polymorphClass() {
 	}
 }
 
+/**
+ * * This function defines a new primitive variable.
+ * @param {string} type Type of the new variable
+ * @param {string} name Name of the new variable
+ * @param {any} value A primitive, value of the variable
+ * @param {string} context The context in which the new variable is to be created
+ */
 export function primvarinit(type, name, value, context = "local") {
-	if (!PRIMITIVE_TYPES.includes(type)) {
+	if (!PRIMITIVE_TYPES.includes(type))
 		throw new Error(
 			`there is no such a primitive type in the Overloads library as ${type}.`
 		)
-	}
+
 	return varinit(type, name, value, context, (type, name, value) =>
 		primitiveValueCheck(value, type === "any" ? typeof value : type, name)
 	)
 }
 
+/**
+ * * This function defines a new class variable.
+ * @param {string} type Type/Class of the new variable
+ * @param {string} name Name of the new variable
+ * @param {any} value A class instance, value of the variable
+ * @param {string} context The context in which the new variable is to be created
+ */
 export function classvarinit(className, name, value, context = "local") {
 	varinit(className, name, value, context, (type, name, value) =>
 		classValueCheck(value, type, name)
 	)
 }
 
+/**
+ * * This function is used for checking if certain value (being a primitive) has a certain type.
+ * @param {any} value Value to be typechecked.
+ * @param {string} type Type, correspondence to which is checked.
+ * @param {string} name The name of the variable to which the value is assigned (debug purposes)
+ * @param {boolean} isFunctionCall Specifies whether the error message should be as if checking the function output value type.
+ */
 export function primitiveValueCheck(
 	value,
 	type,
@@ -223,6 +243,13 @@ export function primitiveValueCheck(
 	return value
 }
 
+/**
+ * * Class version of primitiveValueCheck.
+ * @param {any} value Value to be typechecked.
+ * @param {string} type Type, correspondence to which is checked.
+ * @param {string} name The name of the variable to which the value is assigned (debug purposes)
+ * @param {boolean} isFunctionCall Specifies whether the error message should be as if checking the function output value type.
+ */
 export function classValueCheck(
 	value,
 	className,
@@ -244,6 +271,14 @@ export function classValueCheck(
 	return value
 }
 
+/**
+ * * This function defines a variable. General case of primvarinit and classvarinit functions.
+ * @param {string} type Type/Class of the new variable
+ * @param {string} name Name of the new variable
+ * @param {any} value A class instance/primitive, value of the variable
+ * @param {string} context The context in which the new variable is to be created
+ * @param {Function} checkingFunc Function to be called before initialisation
+ */
 export function varinit(
 	type,
 	name,
@@ -256,12 +291,19 @@ export function varinit(
 	return (contextChoice(context).variables[name] = varinfo)
 }
 
+/**
+ * * Switches current context to a new one.
+ * @param {string} contextname Name of the new context
+ */
 export function setcurrcontext(contextname) {
 	return contextname === "global"
 		? (localvars.current = globalvars)
 		: (localvars.current = localvars.contexts[contextname])
 }
 
+/**
+ * * Returns an object, containing information about the current context.
+ */
 export function getcurrcontext() {
 	function compare(a, b) {
 		if (
@@ -305,11 +347,22 @@ export function getcurrcontext() {
 	return { name: name, context: current }
 }
 
+/**
+ * * Returns a value of a variable.
+ * @param {string} name Name of a variable
+ * @param {string} context Context from which variable is to be taken
+ */
 export function varread(name, context = "local") {
 	return contextChoice(context).variables[name]
 }
 
-
+/**
+ * * Sets a variale to certain value
+ * @param {string} name Name of the variable value of which is to be changed
+ * @param {any} value Value which is to be set
+ * @param {string} context Context in which variable is to be sought
+ * @param {Function} checkFunc Function to be run before all other processes
+ */
 export function varset(
 	name,
 	value,
@@ -327,7 +380,15 @@ export function varset(
 	return (vari.value = value)
 }
 
-// * Note: polyargs is an array. 
+// * Note: polyargs is an array.
+/**
+ * * Defines a new function in a given context
+ * @param {string} name Name of the new function
+ * @param {string} type Return type of a new function
+ * @param {any[]} polyargs A set of arguments specifying the function (works with polymoprphism, like the polymorph() function)
+ * @param {string} context Context in which function is to be defined
+ * @param {boolean} classFunc Specifies whether the function is to be interpreted as one with class types or with primitive types
+ */
 export function defineFunc(
 	name,
 	type,
@@ -349,11 +410,21 @@ function contextChoice(context) {
 		: localvars.contexts[context]
 }
 
+/**
+ * * Returns an object, containing the info about the function.
+ * @param {string} name Name of the function 
+ * @param {string} context Name of the context
+ */
 export function getFuncRef(name, context = "local") {
-	context = contextChoice(context)
-	return context.functions[name]
+	const _context = contextChoice(context)
+	return { ..._context.functions[name], name: name, context: context }
 }
 
+/**
+ * * Calls a function in a given context. 
+ * @param {string} name Name of a function
+ * @param {string} context Name of a context
+*/
 export function callFunc(name, context, ...args) {
 	return (
 		PRIMITIVE_TYPES.includes(contextChoice(context).functions[name].type)
@@ -367,14 +438,45 @@ export function callFunc(name, context, ...args) {
 	)
 }
 
+/**
+ * * Creates a new context
+ * @param {string} context Context name
+*/
 export function makeContext(context) {
 	localvars.contexts[context] = { variables: {}, functions: {} }
 }
 
+/**
+ * * Deletes a context
+ * @param {string} context Name of a context
+*/
 export function deleteContext(context) {
 	delete localvars.contexts[context]
 }
 
+/**
+ * * Prints information about a given variable 
+ * @param {string} varname Name of a variable
+ * @param {string} context Name of a context from which it is to be taken 
+*/
 export function printVar(varname, context = "local") {
 	console.log(varread(varname, context))
+}
+
+/**
+ * * Returns all of the currently available contexts.
+ */
+export function contexts() {
+	let currKey = localvars.current === globalvars ? "global" : ""
+	return {
+		global: globalvars,
+		contexts: Object.keys(localvars.contexts).map((key) => {
+			if (localvars.current === localvars.contexts[key]) currKey = key
+			return {
+				name: key,
+				context: localvars.contexts[key],
+			}
+		}),
+		local: { name: currKey, context: localvars.current },
+	}
 }

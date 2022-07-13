@@ -13,7 +13,8 @@ import {
 	defineFunc,
 	callFunc,
 	deleteContext,
-	getFuncRef
+	getFuncRef,
+	contexts,
 } from "./polymorph.js"
 
 //* Examples on how to use polymorph() function
@@ -124,15 +125,19 @@ printVar("n")
 printVar("static")
 printVar("dynamic")
 
-defineFunc("isodd", "boolean", [
-	["number"],
-	function (n) {
-		return n % 2 === 1
-	},
+defineFunc(
+	"isodd",
+	"boolean",
+	[
+		["number"],
+		function (n) {
+			return n % 2 === 1
+		},
+	],
 	"examples"
-])
+)
 
-
+console.log(contexts())
 console.log(getFuncRef("isodd", "examples"))
 console.log(callFunc("isodd", "examples", 3))
 // console.log(callFunc("isodd", "examples", "string"))
@@ -142,8 +147,7 @@ classvarinit("Number", "n", new Number(20), "dummy")
 printVar("n", "dummy")
 deleteContext("dummy")
 
-
-// Those lines: 
+// Those lines:
 // * setcurrcontext("dummy")
 // * console.log(getcurrcontext())
-// Would cause an error for the dummy context has already been deleted by us. 
+// Would cause an error for the dummy context has already been deleted by us.
