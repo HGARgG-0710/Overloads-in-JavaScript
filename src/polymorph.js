@@ -439,7 +439,7 @@ export function callFunc(name, context, ...args) {
 }
 
 /**
- * * Creates a new context
+ * * Creates a new context or erases all of information of an existing one. 
  * @param {string} context Context name
 */
 export function makeContext(context) {
