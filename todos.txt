@@ -1,0 +1,9 @@
+New list of TODOS; 
+
+1. Fix comments and docs; Stress that it is for adding RUNTIME types to the thing (not compile-time types, like TypeScript; this is nothing like TypeScript, one's own mistake...; this thing actually affects the running of the code, not just a developer tool...)
+2. Write a TypeScript version; 
+3. After having written TypeScript version, pray do compatibility with the "expressions.ts": let this thing also use the infinite types, along with the non-infinite ones and so on... 
+
+	Simplify the already written code using one's 'idea-driven' approach...
+
+4. Create more interesting classes, modules; Add more stuff generally to the library...

@@ -1,12 +1,6 @@
-# Overloads in JavaScript
+# overloads.js
 
-Allows you to make arbitrary overloads of functions.
-Also, allows to add typing to JavaScript functions without the use of TypeScript.
-It can be used for building interpreters for various programming languages.
-
-(About overloads in JavaScript)
-That particular implementation and various additions to the thing (that made it look, behave and work better) are all mine.  
-The idea occured to me from that Ru Habr post: https://habr.com/ru/post/86403/
+This library features adding support of runtime types, function overloading and context management within JavaScript. 
 
 ## Install
 
