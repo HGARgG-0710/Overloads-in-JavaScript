@@ -1,10 +1,5 @@
 /**
- * * Hello and welcome into the source code of the Overloads.js library.
- * * Feel yourself at home.
- * * The library's purpose originally was only to add various missing features to JavaScript (namely, the function overloading),
- * * however, later I decided to add some more stuff and this gave rise to completely new and in a different way valuable capabilities.
- * * I added various comments and tried to make code more accessible.
- * * Hope it was a success :)
+ * * Source code of the overloads.js;
  * @author HGARgG-0710
  */
 
@@ -18,7 +13,7 @@ export const PRIMITIVE_TYPES = Object.freeze([
 	"boolean",
 	"undefined",
 	"symbol",
-	"bigint",
+	"bigint"
 ])
 
 const globalvars = { functions: {}, variables: {} }
@@ -36,7 +31,11 @@ export class SpecialValue {
 
 	static staticRandomFunc = Math.random
 
-	constructor(name, val = staticRandomFunc(), randomfunc = staticRandomFunc) {
+	constructor(
+		name,
+		val = SpecialValue.staticRandomFunc(),
+		randomfunc = staticRandomFunc
+	) {
 		this.#name = name
 		this.#value = val
 		this.#randomfunc = randomfunc
@@ -73,13 +72,28 @@ export class SpecialValue {
  */
 export class Any {
 	#value
+	#isConstant
 
-	constructor(value) {
+	constructor(value, constant = false) {
 		this.#value = value
+		this.#isConstant = constant
+	}
+
+	set value(something) {
+		if (this.#isConstant) throw new Error("Constant!")
+		this.value = something
 	}
 
 	get value() {
 		return this.#value
+	}
+
+	freeze() {
+		this.#isConstant = true
+	}
+
+	unfreeze() {
+		this.#isConstant = false
 	}
 }
 
@@ -146,7 +160,7 @@ export function polymorphClass() {
 				typedArray[arguments[i].length] = []
 			typedArray[arguments[i].length].push({
 				types: arguments[i - 1],
-				func: arguments[i],
+				func: arguments[i]
 			})
 		} else if (typeof arguments[i] === "function")
 			untypedArray[arguments[i].length] = arguments[i]
@@ -398,7 +412,7 @@ export function defineFunc(
 ) {
 	contextChoice(context).functions[name] = {
 		type: type,
-		funct: classFunc ? polymorphClass(...polyargs) : polymorph(...polyargs),
+		funct: classFunc ? polymorphClass(...polyargs) : polymorph(...polyargs)
 	}
 }
 
@@ -412,7 +426,7 @@ function contextChoice(context) {
 
 /**
  * * Returns an object, containing the info about the function.
- * @param {string} name Name of the function 
+ * @param {string} name Name of the function
  * @param {string} context Name of the context
  */
 export function getFuncRef(name, context = "local") {
@@ -421,10 +435,10 @@ export function getFuncRef(name, context = "local") {
 }
 
 /**
- * * Calls a function in a given context. 
+ * * Calls a function in a given context.
  * @param {string} name Name of a function
  * @param {string} context Name of a context
-*/
+ */
 export function callFunc(name, context, ...args) {
 	return (
 		PRIMITIVE_TYPES.includes(contextChoice(context).functions[name].type)
@@ -439,9 +453,9 @@ export function callFunc(name, context, ...args) {
 }
 
 /**
- * * Creates a new context or erases all of information of an existing one. 
+ * * Creates a new context or erases all of information of an existing one.
  * @param {string} context Context name
-*/
+ */
 export function makeContext(context) {
 	localvars.contexts[context] = { variables: {}, functions: {} }
 }
@@ -449,16 +463,16 @@ export function makeContext(context) {
 /**
  * * Deletes a context
  * @param {string} context Name of a context
-*/
+ */
 export function deleteContext(context) {
 	delete localvars.contexts[context]
 }
 
 /**
- * * Prints information about a given variable 
+ * * Prints information about a given variable
  * @param {string} varname Name of a variable
- * @param {string} context Name of a context from which it is to be taken 
-*/
+ * @param {string} context Name of a context from which it is to be taken
+ */
 export function printVar(varname, context = "local") {
 	console.log(varread(varname, context))
 }
@@ -474,9 +488,9 @@ export function contexts() {
 			if (localvars.current === localvars.contexts[key]) currKey = key
 			return {
 				name: key,
-				context: localvars.contexts[key],
+				context: localvars.contexts[key]
 			}
 		}),
-		local: { name: currKey, context: localvars.current },
+		local: { name: currKey, context: localvars.current }
 	}
 }

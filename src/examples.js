@@ -69,9 +69,9 @@ const a = new String("a")
 console.log(polyCl(a, new String(a + a))) // aaa
 console.log(polyCl(0)) // 0
 
-// * Examples on safe typesystem (TypeScript alternative).
+// * Examples on runtime typing.
 
-// Safe variable initializing.
+// variable initializing
 const typesafeprim = primitiveValueCheck(5, "number")
 console.log(typesafeprim)
 
