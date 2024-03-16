@@ -13,3 +13,8 @@ New list of TODOS;
 6. Debug it properly (there are bugs...)
 
 7. Work on documentation...
+
+8. LATER: 
+
+	Delete this...
+	The 'math-expression.js@>=1.1' will be implementing the functionality of this FAR-FAR more extendedly...;
